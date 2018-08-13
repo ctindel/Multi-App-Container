@@ -7,11 +7,10 @@
 ######
 
 # EXPAND STOCK SYMBOL INPUT TO PERMIT MULTIPLE STOCK SELECTION
-'''import dash
+import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
-'''
 
 
 from datetime import datetime
