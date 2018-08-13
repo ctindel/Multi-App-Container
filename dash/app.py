@@ -18,7 +18,7 @@ import pandas as pd
 pd.core.common.is_list_like = pd.api.types.is_list_like
 import pandas_datareader.data as web # requires v0.6.0 or later
 
-#app = dash.Dash()
+app = dash.Dash()
 server = app.server
 
 nsdq = pd.read_csv('NASDAQcompanylist.csv')
