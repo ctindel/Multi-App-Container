@@ -12,12 +12,12 @@ This is essentially a fork of the Stock Ticker with two apps now. Second one is 
 Added second container for the app1 called "dash1" in the docker-compose.yml.
 
     dash1:
-            container_name: dash1
-                restart: always
-                build: ./dash1
-                ports:
-                - "8500:8500"
-                command: gunicorn -w 1 -b :8500 app1:server
+        container_name: dash1
+        restart: always
+        build: ./dash1
+        ports:
+        - "8500:8500"
+        command: gunicorn -w 1 -b :8500 app1:server
 
 ## Synopsis
 A Nginx and Python Flask Container used for bootstraping continuous deployment of Dash / Plot.ly Applications.
