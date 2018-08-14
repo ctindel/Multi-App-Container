@@ -13,7 +13,7 @@ services:
   dash1:
     container_name: dash1
     restart: always
-    build: ./dash
+    build: ./dash1
     ports:
       - "8500:8500"
     command: gunicorn -w 1 -b :8500 app1:server # was 8000
