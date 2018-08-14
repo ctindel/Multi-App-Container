@@ -20,7 +20,7 @@ services:
 
   nginx:
     container_name: nginx
-    restart: always
+    restart: unless-stopped
     build: ./nginx
     ports:
       - "80:80"
@@ -28,5 +28,3 @@ services:
     depends_on:
       - dash
 
-# command: gunicorn --certfile=/etc/letsencrypt/csr/cert.crt --keyfile=/etc/letsencrypt/keys/nginx_ssl.key test:app
-# command: gunicorn --certfile=/etc/letsencrypt/csr/cert.crt --keyfile=/etc/letsencrypt/keys/nginx_ssl.key --bind 0.0.0.0:443 test:app
