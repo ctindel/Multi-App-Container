@@ -25,6 +25,8 @@ services:
     ports:
       - "80:80"
       #- "443:443"
+    command: "tail -f /dev/null"
     depends_on:
       - dash
+      - dash1
 
