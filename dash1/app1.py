@@ -5,7 +5,7 @@ import dash_html_components as html
 
 server = Flask(__name__)
 
-app = dash.Dash(name='Bootstrap_docker_app',
+app1 = dash.Dash(name='Bootstrap_docker_app',
                 server=server,
                 csrf_protect=False)
 
@@ -14,7 +14,7 @@ colors = {
     'text': '#7FDBFF'
 }
 
-app.layout = html.Div(style={'backgroundColor': colors['background']}, children=[
+app1.layout = html.Div(style={'backgroundColor': colors['background']}, children=[
     html.H1(
         children='Test 1',
         style={
@@ -59,4 +59,4 @@ app.layout = html.Div(style={'backgroundColor': colors['background']}, children=
 ])
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app1.run_server(debug=True)

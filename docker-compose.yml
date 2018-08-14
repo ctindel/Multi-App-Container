@@ -10,13 +10,13 @@ services:
       - "8000:8000"
     command: gunicorn -w 1 -b :8000 app:server # was 8000
 
- # dash1:
- #   container_name: dash1
- #   restart: always
- #   build: ./dash
- #   ports:
- #     - "8500:8500"
- #   command: gunicorn -w 1 -b :8500 app:server # was 8000
+  dash1:
+    container_name: dash1
+    restart: always
+    build: ./dash
+    ports:
+      - "8500:8500"
+   command: gunicorn -w 1 -b :8500 app1:server # was 8000
 
   nginx:
     container_name: nginx
