@@ -25,6 +25,17 @@ services:
       - FLASK_ENV=development
     command: gunicorn --log-level debug -w 1 -b :8500 app1:server
 
+  dash2:
+    container_name: dash2
+    hostname: dash2
+    restart: always
+    build: ./dash2
+    networks:
+      tsworker-net:
+    expose:
+    - "9000"
+    command: gunicorn -w 1 -b :9000 app2:server # was 8000
+
   nginx:
     image: nginx:1.15
     container_name: nginx
