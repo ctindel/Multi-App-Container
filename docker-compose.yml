@@ -55,6 +55,7 @@ services:
     depends_on:
       - dash
       - dash1
+      - dash2
 
 networks:
   tsworker-net:
