@@ -18,7 +18,9 @@ import pandas as pd
 pd.core.common.is_list_like = pd.api.types.is_list_like
 import pandas_datareader.data as web # requires v0.6.0 or later
 
-app = dash.Dash()
+app = dash.Dash(name='Bootstrap_docker_app',
+                url_base_pathname='/dash/',
+                csrf_protect=False)
 server = app.server
 
 nsdq = pd.read_csv('NASDAQcompanylist.csv')
@@ -85,4 +87,5 @@ def update_graph(n_clicks, stock_ticker, start_date, end_date):
     return fig
 
 if __name__ == '__main__':
-    app.run_server(ssl_context='adhoc')
+    #app.run_server(ssl_context='adhoc')
+    app.run_server()

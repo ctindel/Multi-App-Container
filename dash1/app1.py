@@ -2,11 +2,13 @@ from flask import Flask
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+import logging
 
 server = Flask(__name__)
 
 app1 = dash.Dash(name='Bootstrap_docker_app',
                 server=server,
+                url_base_pathname='/dash1/',
                 csrf_protect=False)
 
 colors = {

@@ -1,0 +1,10 @@
+# This file can't be copied directly, it needs to be installed via the 
+#  deploy.sh script so that the ExecStart line gets added with the correct 
+#  ExecStart path
+
+[Unit]
+Description=Check for letsencrypt cert update every day
+
+[Service]
+Type=oneshot
+#ExecStart=/bin/bash /home/ubuntu/ctindel/Multi-App-Container/utils/update_cert.sh
