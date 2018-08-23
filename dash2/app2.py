@@ -71,4 +71,4 @@ html.Div([
 
 # Add the server clause:
 if __name__ == '__main__':
-    app2.run_server()
+    app1.run_server()
