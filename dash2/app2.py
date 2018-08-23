@@ -24,7 +24,7 @@ app2 = dash.Dash(name='Bootstrap_docker_app',
 df = pd.read_csv('data/OldFaithful.csv')
 
 # Create a Dash layout that contains a Graph component:
-app.layout = html.Div([
+app2.layout = html.Div([
     dcc.Graph(
     id='old_faithful',
     figure={
@@ -71,4 +71,4 @@ html.Div([
 
 # Add the server clause:
 if __name__ == '__main__':
-    app.run_server()
+    app2.run_server()
