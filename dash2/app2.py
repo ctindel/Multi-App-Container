@@ -1,54 +1,71 @@
-from flask import Flask
+#######
+# Objective: build a dashboard that imports OldFaithful.csv
+# from the data directory, and displays a scatterplot.
+# The field names are:
+# 'D' = date of recordings in month (in August),
+# 'X' = duration of the current eruption in minutes (to nearest 0.1 minute),
+# 'Y' = waiting time until the next eruption in minutes (to nearest minute).
+######
+
+# Perform imports here:
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+import plotly.graph_objs as go
+import pandas as pd
 
-server = Flask(__name__)
+# Launch the application:
+app = dash.Dash()
 
-app1 = dash.Dash(name='Bootstrap_docker_app',
-                server=server,
-                url_base_pathname='/dash2/', # Reference to the app for creating a path to it
-                csrf_protect=False)
+# Create a DataFrame from the .csv file:
+df = pd.read_csv('data/OldFaithful.csv')
 
-colors = {
-    'background': '#444547',
-    'text': '#ffffff'
-}
-
-app1.layout = html.Div(style={'backgroundColor': colors['background']}, children=[
-    html.H1(
-        children='Test 1',
-        style={
-            'textAlign': 'center',
-            'color': colors['text']
-        }
+# Create a Dash layout that contains a Graph component:
+app.layout = html.Div([
+    dcc.Graph(
+    id='old_faithful',
+    figure={
+        'data': [
+            go.Scatter(
+                x = df['X'],
+                y = df['Y'],
+                mode = 'markers'
+            )
+        ],
+        'layout': go.Layout(
+            title = 'Old Faithful Eruption Intervals v Durations',
+            xaxis = {'title': 'Duration of eruption (minutes)'},
+            yaxis = {'title': 'Interval to next eruption (minutes)'},
+            hovermode='closest'
+        )
+    } # close figure {}
     ),
 
-    html.Div(children='Dash: A Dashboard Visualization Framework for Python', style={
-        'textAlign': 'center',
-        'color': colors['text']
-    }),
-
+    # add another graph
+html.Div([
     dcc.Graph(
-        id='example-graph-2',
+        id='old_faithful1',
         figure={
             'data': [
-                {'x': [1, 2, 3], 'y': [4, 1, 2], 'type': 'bar', 'name': 'SF'},
-                {'x': [1, 2, 3], 'y': [2, 4, 5], 'type': 'bar', 'name': u'Montréal'},
-                {'x': [1, 2, 3], 'y': [5, 3, 1], 'type': 'bar', 'name': u'New York'},
-                {'x': [1, 2, 3], 'y': [5, 4, 3], 'type': 'bar', 'name': u'Portland'},
+                go.Scatter(
+                    x = df['X'],
+                    y = df['Y'],
+                    mode = 'markers'
+                )
             ],
-            'layout': {
-
-                'plot_bgcolor': colors['background'],
-                'paper_bgcolor': colors['background'],
-                'font': {
-                    'color': colors['text']
-                }
-            }
-        }
+            'layout': go.Layout(
+                title = 'Old Faithful Eruption Intervals v Durations',
+                xaxis = {'title': 'Duration of eruption (minutes)'},
+                yaxis = {'title': 'Interval to next eruption (minutes)'},
+                hovermode='closest'
+            ) # close layout ()
+        } # close figure {}
     )
+    ])
 ])
 
+# Close Div ([ ])
+
+# Add the server clause:
 if __name__ == '__main__':
-    app1.run_server(debug=True)
+    app.run_server()
