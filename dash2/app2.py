@@ -8,6 +8,7 @@
 ######
 
 # Perform imports here:
+from flask import Flask
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -18,8 +19,9 @@ import pandas as pd
 server = Flask(__name__)
 
 app2 = dash.Dash(name='Bootstrap_docker_app',
+                 server=server,
                 url_base_pathname='/dash2/',
-                csrf_protect=False))
+                csrf_protect=False)
 
 # Create a DataFrame from the .csv file:
 df = pd.read_csv('data/OldFaithful.csv')
