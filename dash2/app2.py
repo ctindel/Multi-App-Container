@@ -15,7 +15,7 @@ import plotly.graph_objs as go
 import pandas as pd
 
 # Launch the application:
-app = dash.Dash(name='Bootstrap_docker_app',
+app2 = dash.Dash(name='Bootstrap_docker_app',
                 server=server,
                 url_base_pathname='/dash2/',
                 csrf_protect=False))
