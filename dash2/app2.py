@@ -15,8 +15,9 @@ import plotly.graph_objs as go
 import pandas as pd
 
 # Launch the application:
+server = Flask(__name__)
+
 app2 = dash.Dash(name='Bootstrap_docker_app',
-                server=server,
                 url_base_pathname='/dash2/',
                 csrf_protect=False))
 
@@ -71,4 +72,4 @@ html.Div([
 
 # Add the server clause:
 if __name__ == '__main__':
-    app1.run_server()
+    app2.run_server()
