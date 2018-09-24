@@ -11,6 +11,7 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
+import base64
 
 
 from datetime import datetime
@@ -23,50 +24,80 @@ app = dash.Dash(name='Bootstrap_docker_app',
                 csrf_protect=False)
 server = app.server
 
+app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
 nsdq = pd.read_csv('NASDAQcompanylist.csv')
 nsdq.set_index('Symbol', inplace=True)
+logo_image = '/Volumes/LaCie/thought-society-content/ThoughtSociety/logos/tslogo-ai-three-heads.png'
+
 options = []
 for tic in nsdq.index:
     options.append({'label':'{} {}'.format(tic,nsdq.loc[tic]['Name']), 'value':tic})
 
-app.layout = html.Div([
-    html.H1('Stock Ticker Dashboard'),
-    html.Div([
-        html.H3('Select stock symbols:', style={'paddingRight':'30px'}),
-        dcc.Dropdown(
-            id='my_ticker_symbol',
-            options=options,
-            value=['TSLA'],
-            multi=True
-        )
-    ], style={'display':'inline-block', 'verticalAlign':'top', 'width':'30%'}),
-    html.Div([
-        html.H3('Select start and end dates:'),
-        dcc.DatePickerRange(
-            id='my_date_picker',
-            min_date_allowed=datetime(2015, 1, 1),
-            max_date_allowed=datetime.today(),
-            start_date=datetime(2018, 1, 1),
-            end_date=datetime.today()
-        )
-    ], style={'display':'inline-block'}),
-    html.Div([
-        html.Button(
-            id='submit-button',
-            n_clicks=0,
-            children='Submit',
-            style={'fontSize':24, 'marginLeft':'30px'}
+'''
+    This code block builds a set of divs that consist of :
+        1. H1 and H3 labels
+        2. Drop-down component to select the stock
+        3. Date range picker component
+        4. Button to initiate the selection
+        5. Graph object within the div
+'''
+
+def get_logo():
+    encoded_image = base64.b64encode(open(logo_image, "rb").read())
+    logo = html.Div(
+        html.Img(
+            src="data:image/png;base64,{}".format(encoded_image.decode()), height="57"
         ),
-    ], style={'display':'inline-block'}),
-    dcc.Graph(
-        id='my_graph',
-        figure={
-            'data': [
-                {'x': [1,2], 'y': [3,1]}
-            ]
-        }
+        style={"marginTop": "0"},
+        className="sept columns",
     )
-])
+    return logo
+
+
+app.layout = html.Div([
+html.Div([ get_logo() ]),
+html.H1('Stock Ticker Dashboard',style={'color':'rgb(201,76,76'}),
+
+html.Div([
+    html.H3('Select stock symbols:', style={'paddingRight':'30px','color':'rgb(0, 138, 230)'}),
+    dcc.Dropdown(
+        id='my_ticker_symbol',
+        options=options,
+        value=['TSLA'],
+        multi=True
+    )
+], style={'display':'inline-block', 'verticalAlign':'top', 'width':'30%','padding-bottom':'10'}),
+html.Div([
+    html.H3('Select start and end dates:'),
+    dcc.DatePickerRange(
+        id='my_date_picker',
+        min_date_allowed=datetime(2015, 1, 1),
+        max_date_allowed=datetime.today(),
+        start_date=datetime(2018, 1, 1),
+        end_date=datetime.today(),
+
+    )
+], style={'display':'inline-block','padding-bottom':'10px','padding-left':'10'}),
+html.Div([
+    html.Button(
+        id='submit-button',
+        n_clicks=0,
+        children='Submit',
+        style={'fontSize':24, 'marginLeft':'30px'}
+    ),
+], style={'display':'inline-block'}),
+dcc.Graph(
+    id='my_graph',
+    figure={
+        'data': [
+            {'x': [1,2], 'y': [3,1]},
+
+        ]
+    }, style = {'border':'2px blue solid'}
+    # 'border':'2px','border-style': 'solid','color':'rgb(0, 138, 230)'
+)
+] )
+
 @app.callback(
     Output('my_graph', 'figure'),
     [Input('submit-button', 'n_clicks')],

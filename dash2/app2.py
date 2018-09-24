@@ -24,7 +24,7 @@ app2 = dash.Dash(name='Bootstrap_docker_app',
                 csrf_protect=False)
 
 # Create a DataFrame from the .csv file:
-df = pd.read_csv('data/OldFaithful.csv')
+df = pd.read_csv('../data/OldFaithful.csv')
 
 # Create a Dash layout that contains a Graph component:
 app2.layout = html.Div([
