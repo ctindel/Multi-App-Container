@@ -14,10 +14,13 @@ import numpy as np
 pd.core.common.is_list_like = pd.api.types.is_list_like
 # import pandas_datareader.data as web # requires v0.6.0 or later
 
+
+server = Flask(__name__)
+
 app = dash.Dash(name='Bootstrap_docker_app',
+                 server=server,
                 url_base_pathname='/dash/',
                 csrf_protect=False)
-server = app.server
 
 text_color = 'rgb(36,36,36)'
 bg_color = 'rgb(255,255,255)'
