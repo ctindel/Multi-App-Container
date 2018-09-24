@@ -1,121 +1,298 @@
-#######
-# First Milestone Project: Develop a Stock Ticker
-# dashboard that either allows the user to enter
-# a ticker symbol into an input box, or to select
-# item(s) from a dropdown list, and uses pandas_datareader
-# to look up and display stock data on a graph.
-######
 
-# EXPAND STOCK SYMBOL INPUT TO PERMIT MULTIPLE STOCK SELECTION
+
+# simple stock comparitor
+
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output, State
-import base64
-
+import plotly.graph_objs as go
 
 from datetime import datetime
 import pandas as pd
+import numpy as np
 pd.core.common.is_list_like = pd.api.types.is_list_like
-import pandas_datareader.data as web # requires v0.6.0 or later
+# import pandas_datareader.data as web # requires v0.6.0 or later
 
 app = dash.Dash(name='Bootstrap_docker_app',
                 url_base_pathname='/dash/',
                 csrf_protect=False)
 server = app.server
 
+text_color = 'rgb(36,36,36)'
+bg_color = 'rgb(255,255,255)'
+grid_color = '#666666'
+black_text = '#000000'
+
+# Get Chryddyp's CSS for Dash from Codepen
+
 app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
-nsdq = pd.read_csv('NASDAQcompanylist.csv')
-nsdq.set_index('Symbol', inplace=True)
-logo_image = '/Volumes/LaCie/thought-society-content/ThoughtSociety/logos/tslogo-ai-three-heads.png'
+#app.css.append_css({'/Users/salvideoguy/static/reset.css'})
+
+# get four excel datafiles - 1 for DJIA and the other for Nasdaq Tech Sector
+
+djia = pd.read_excel('../data/djia.xls')
+ndxt = pd.read_excel('../data/ndxt.xls')
+ixic = pd.read_csv('../data/ixic.csv')
+gspc = pd.read_csv('../data/gspc.csv')
+
+last_year = 2018
+first_year = 2006
+
+# Prepare a clean list of integer years from mkt_Index
+# Return the list
+
+def clean_mkt_index(mkt_Index):
+    yrstr = []
+    year_list = []  # holding unique year strings
+    nyear = []
+
+    for rawdatestr in mkt_Index['Date']:
+        yrstr.append(rawdatestr[0:4]) # extract date info for all dates
+    for years in np.unique(yrstr): # get unique date info by year
+        year_list.append(years)
+    del year_list[-1] # strip the last string which is invalid
+    for nyr in year_list:
+        nyear.append(int(nyr))
+    return nyear
+
+year_index = clean_mkt_index(djia) # integer years
+year_index_strings = [str(item) for item in year_index] # year strings
 
 options = []
-for tic in nsdq.index:
-    options.append({'label':'{} {}'.format(tic,nsdq.loc[tic]['Name']), 'value':tic})
+i = 0
 
-'''
-    This code block builds a set of divs that consist of :
-        1. H1 and H3 labels
-        2. Drop-down component to select the stock
-        3. Date range picker component
-        4. Button to initiate the selection
-        5. Graph object within the div
-'''
+for year in year_index_strings:
+    options.append({'label':'{}'.format(year),'value':year_index[i]})
+    i+=1
 
-def get_logo():
-    encoded_image = base64.b64encode(open(logo_image, "rb").read())
-    logo = html.Div(
-        html.Img(
-            src="data:image/png;base64,{}".format(encoded_image.decode()), height="57"
-        ),
-        style={"marginTop": "0"},
-        className="sept columns",
-    )
-    return logo
+#for tic in nsdq.index:
+#    options.append({'label':'{} {}'.format(tic,nsdq.loc[tic]['Name']), 'value':tic})
 
 
-app.layout = html.Div([
-html.Div([ get_logo() ]),
-html.H1('Stock Ticker Dashboard',style={'color':'rgb(201,76,76'}),
+app.layout=html.Div([   # top,rt,bot,lft
 
-html.Div([
-    html.H3('Select stock symbols:', style={'paddingRight':'30px','color':'rgb(0, 138, 230)'}),
-    dcc.Dropdown(
-        id='my_ticker_symbol',
-        options=options,
-        value=['TSLA'],
-        multi=True
-    )
-], style={'display':'inline-block', 'verticalAlign':'top', 'width':'30%','padding-bottom':'10'}),
-html.Div([
-    html.H3('Select start and end dates:'),
-    dcc.DatePickerRange(
-        id='my_date_picker',
-        min_date_allowed=datetime(2015, 1, 1),
-        max_date_allowed=datetime.today(),
-        start_date=datetime(2018, 1, 1),
-        end_date=datetime.today(),
+    html.H2('Market Trends Over a Dozen Years',style={'width':'99.999%','color':'black',
+        'text-align':'center','background-color':bg_color ,
+            'margin-bottom': '0px','padding':'10px 0px 0px 0px'}
+                                                         # 'padding':'10px 0px 100px 0px'})
+            ),
 
-    )
-], style={'display':'inline-block','padding-bottom':'10px','padding-left':'10'}),
-html.Div([
-    html.Button(
-        id='submit-button',
-        n_clicks=0,
-        children='Submit',
-        style={'fontSize':24, 'marginLeft':'30px'}
+    # combi-plots with dropdown
+
+    html.Div([
+
+    dcc.Graph(id='djia_id'), # djia graph
+
+    #dcc.Dropdown(
+    #            id='yr_selector_dd',
+    #            options=options,
+    #            value='2006'
+    #            ),
+
+
+    dcc.Graph(id='ndxt_id'), # ndxt graph
+    ],style={'display':'inline-block','width':'33.333%'},
     ),
-], style={'display':'inline-block'}),
-dcc.Graph(
-    id='my_graph',
-    figure={
-        'data': [
-            {'x': [1,2], 'y': [3,1]},
 
-        ]
-    }, style = {'border':'2px blue solid'}
-    # 'border':'2px','border-style': 'solid','color':'rgb(0, 138, 230)'
+    html.Div ([
+    dcc.Graph(id='djiaII_id'), # djia graph
+    dcc.Graph(id='gspc_id'), # ndxt graph
+    ],style={'display':'inline-block','width':'33.333%'}
+    ),
+
+    html.Div ([
+    dcc.Graph(id='ixic2_id'), # djia graph
+    dcc.Graph(id='gspc2_id'), # ndxt graph
+    ],style={'display':'inline-block','width':'33.333%'}
+    ),
+
+    html.Div(dcc.Slider(  # The years range slider
+                id='years-range-slider',
+                min=2006,
+                max=2018,
+                value=2018,
+                step=2,
+                marks= {i: '{}'.format(i) for i in year_index},
+
+            ), style={'color':'red','width': '95%', 'margin-top': '0px',
+                      'padding':'30px 38px 30px 30px', # top,rt,bot,lft
+                      'background-color':bg_color}
+        )
+
+], style={'width': '99.999%','display': 'inline','font': {'color':text_color},
+          'padding':'0px 0px 60px 0px','background-color':bg_color,
+          'margin-bottom': '0px'}
+
 )
-] )
 
-@app.callback(
-    Output('my_graph', 'figure'),
-    [Input('submit-button', 'n_clicks')],
-    [State('my_ticker_symbol', 'value'),
-    State('my_date_picker', 'start_date'),
-    State('my_date_picker', 'end_date')])
-def update_graph(n_clicks, stock_ticker, start_date, end_date):
-    start = datetime.strptime(start_date[:10], '%Y-%m-%d')
-    end = datetime.strptime(end_date[:10], '%Y-%m-%d')
+#### Callbacks
+
+# trace all the closing values from year.min to selected max.year using the 'value' (highest year)
+# reshape the array in a temporary array and run it to the end.
+
+@app.callback( # Stock # 1 - DJIA
+    Output('djia_id', 'figure'),
+    [Input('years-range-slider', 'value')])
+def update_stock_graph(value):
+
+    # print (value)
+
+    # original cutoff for the slider
+    # cutoff = (value - first_year) * 12
+
+    '''
+    To use the dropdown, produce a slice range that grabs just the rows 
+    from the selected year and copies it into the f_djia df
+    each date has 12 rows of data - 1 for each month
+    To set a lower and upper mask to slice the df, it is the first row of the chosen date +12
+    
+    value = integer year.  years go from 2006 - 2018 or 6-18.  This is essentially a range of 12 years.
+    For 12 months.  So the index range is 0-143.  If the selected year is 2010
+    
+    
+    '''
+
+    #year_val = (int(value) - 2005) - 1
+    #year_end = year_val + 12
+
+
     traces = []
-    for tic in stock_ticker:
-        df = web.DataReader(tic,'iex',start,end)
-        traces.append({'x':df.index, 'y': df.close, 'name':tic})
+    cutoff = (value - first_year) * 12
+
+    f_djia = djia[0:cutoff]
+    f_ndxt = ndxt[0:cutoff]
+    f_ixic = ixic[0:cutoff]
+    f_gspc = gspc[0:cutoff]
+
+    #f_djia = djia[year_val:year_end]
+    #f_ndxt = ndxt[year_val:year_end]
+    #f_ixic = ixic[year_val:year_end]
+    #f_gspc = gspc[year_val:year_end]
+
+
+
+    traces.append({'x': f_djia['Date'], 'y': f_djia['Close'], 'name': 'djia'}),
+    traces.append({'x': f_ndxt['Date'], 'y': f_ndxt['Close'], 'name': 'ndxt'}),
+    traces.append({'x': f_ixic['Date'], 'y': f_ixic['Close'], 'name': 'ixic'}),
+    traces.append({'x': f_gspc['Date'], 'y': f_gspc['Close'], 'name':'gspc'}),
+
     fig = {
         'data': traces,
-        'layout': {'title':', '.join(stock_ticker)+' Closing Prices'}
+        'layout': {'title':'DJIA, NDXT, NASDAQ, S&P Closings',
+                   'paper_bgcolor':bg_color,'plot_bgcolor':bg_color,
+                   'font': {'color':text_color},
+                   'xaxis':{'gridcolor':grid_color,'range':[cutoff-first_year],'step':1},
+                   'yaxis': {'gridcolor': grid_color}
+
+    }
     }
     return fig
+
+
+@app.callback( # Stock #2 NDXT
+    Output('ndxt_id', 'figure'),
+    [Input('years-range-slider', 'value')])
+def update_stock_graph(value):
+
+    traces = []
+    cutoff = (value - first_year) * 12
+    f_ndxt = ndxt[0:cutoff]
+
+    traces.append({'x': f_ndxt['Date'], 'y': f_ndxt['Close'], 'name': 'ndxt'}),
+
+    fig = {
+        'data': traces,
+        'layout': {'title':'Nasdaq Tech Sector Closing Price',
+                   'paper_bgcolor':bg_color,'plot_bgcolor':bg_color,'font': {'color':text_color},
+                   'xaxis': {'gridcolor': grid_color},
+                   'yaxis': {'gridcolor': grid_color}
+                   }
+    }
+    return fig
+
+@app.callback( # Stock #3 IXIC
+    Output('djiaII_id', 'figure'),
+    [Input('years-range-slider', 'value')])
+def update_stock_graph(value):
+
+    traces = []
+    cutoff = (value - first_year) * 12
+    f_djia = djia[0:cutoff]
+
+    traces.append({'x': f_djia['Date'], 'y': f_djia['Close'], 'name': 'djia'}),
+
+    fig = {
+        'data': traces,
+        'layout': {'title':'Djia Closing Price',
+                   'paper_bgcolor':bg_color,'plot_bgcolor':bg_color,'font': {'color':text_color},
+                   'xaxis': {'gridcolor': grid_color},
+                   'yaxis': {'gridcolor': grid_color}
+                   }
+    }
+    return fig
+
+@app.callback( # Stock #4 GSPC
+    Output('gspc_id', 'figure'),
+    [Input('years-range-slider', 'value')])
+def update_stock_graph(value):
+
+    traces = []
+    cutoff = (value - first_year) * 12
+    f_gspc = gspc[0:cutoff]
+
+    traces.append({'x': f_gspc['Date'], 'y': f_gspc['Close'], 'name': 'gspc'})
+    fig = {
+        'data': traces,
+        'layout': {'title':'S&P 500 Closing Price',
+                   'paper_bgcolor':bg_color,'plot_bgcolor':bg_color,'font': {'color':text_color},
+                   'xaxis': {'gridcolor': grid_color},
+                   'yaxis': {'gridcolor': grid_color}
+                   }
+    }
+    return fig
+
+@app.callback( # Stock #3 IXIC
+    Output('ixic2_id', 'figure'),
+    [Input('years-range-slider', 'value')])
+def update_stock_graph(value):
+
+    traces = []
+    cutoff = (value - first_year) * 12
+    f_ixic = ixic[0:cutoff]
+
+    traces.append({'x': f_ixic['Date'], 'y': f_ixic['Close'], 'name': 'ixic2'}),
+
+    fig = {
+        'data': traces,
+        'layout': {'title':'Nasdaq-100 Closing Price',
+                   'paper_bgcolor':bg_color,'plot_bgcolor':bg_color,'font': {'color':text_color},
+                   'xaxis': {'gridcolor': grid_color},
+                   'yaxis': {'gridcolor': grid_color}
+                   }
+    }
+    return fig
+
+@app.callback( # Stock #4 GSPC
+    Output('gspc2_id', 'figure'),
+    [Input('years-range-slider', 'value')])
+def update_stock_graph(value):
+
+    traces = []
+    cutoff = (value - first_year) * 12
+    f_gspc = gspc[0:cutoff]
+
+    traces.append({'x': f_gspc['Date'], 'y': f_gspc['Close'], 'name': 'gspc2'})
+    fig = {
+        'data': traces,
+        'layout': {'title':'S&P 500 Closing Price',
+                   'paper_bgcolor':bg_color,'plot_bgcolor':bg_color,'font': {'color':text_color},
+                   'xaxis': {'gridcolor': grid_color},
+                   'yaxis': {'gridcolor': grid_color}
+                   }
+    }
+    return fig
+
 
 if __name__ == '__main__':
     #app.run_server(ssl_context='adhoc')
