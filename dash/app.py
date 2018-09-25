@@ -34,10 +34,10 @@ app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"
 
 # get four excel datafiles - 1 for DJIA and the other for Nasdaq Tech Sector
 
-djia = pd.read_excel('../data/djia.xls')
-ndxt = pd.read_excel('../data/ndxt.xls')
-ixic = pd.read_csv('../data/ixic.csv')
-gspc = pd.read_csv('../data/gspc.csv')
+djia = pd.read_excel('/tmp/data/djia.xls')
+ndxt = pd.read_excel('/tmp/data/ndxt.xls')
+ixic = pd.read_csv('/tmp/data/ixic.csv')
+gspc = pd.read_csv('/tmp/data/gspc.csv')
 
 last_year = 2018
 first_year = 2006

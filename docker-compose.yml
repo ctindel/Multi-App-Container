@@ -10,6 +10,8 @@ services:
       tsworker-net:
     expose:
       - "8000"
+    volumes:
+      - ./data:/tmp/data:ro
     command: gunicorn -w 1 -b :8000 app:server
 
   dash1:
@@ -21,6 +23,8 @@ services:
       tsworker-net:
     expose:
       - "8500"
+    volumes:
+      - ./data:/tmp/data:ro
     environment:
       - FLASK_ENV=development
     command: gunicorn --log-level debug -w 1 -b :8500 app1:server
@@ -34,6 +38,8 @@ services:
       tsworker-net:
     expose:
     - "9000"
+    volumes:
+      - ./data:/tmp/data:ro
     command: gunicorn -w 1 -b :9000 app2:server # was 8000
 
   nginx:
